@@ -1,0 +1,63 @@
+{
+	"name": "Dataflow_Dimension",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DimensionTable",
+						"type": "DatasetReference"
+					},
+					"name": "StageSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "StageTable",
+						"type": "DatasetReference"
+					},
+					"name": "TableIndia"
+				},
+				{
+					"dataset": {
+						"referenceName": "StageTable",
+						"type": "DatasetReference"
+					},
+					"name": "TableUSA"
+				},
+				{
+					"dataset": {
+						"referenceName": "StageTable",
+						"type": "DatasetReference"
+					},
+					"name": "TablePhil"
+				},
+				{
+					"dataset": {
+						"referenceName": "StageTable",
+						"type": "DatasetReference"
+					},
+					"name": "TableNYC"
+				},
+				{
+					"dataset": {
+						"referenceName": "StageTable",
+						"type": "DatasetReference"
+					},
+					"name": "TableAU"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DateTransform"
+				},
+				{
+					"name": "ConditionalSplit1"
+				}
+			],
+			"script": "source(output(\n\t\tName as string,\n\t\tCustomer_I as string,\n\t\tOpen_Dt as string,\n\t\tConsul_Dt as string,\n\t\tVAC_ID as string,\n\t\tDR_Name as string,\n\t\tState as string,\n\t\tCountry as string,\n\t\tDOB as string,\n\t\tFLAG as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StageSource\nStageSource derive(Open_Dt = toDate(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2),'yyyy-MM-dd'),\n\t\tConsul_Dt = toDate(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2),'yyyy-MM-dd'),\n\t\tDOB = toDate(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4),'MM-dd-yyyy')) ~> DateTransform\nDateTransform split(trim(Country)=='IND',\n\ttrim(Country)=='USA',\n\ttrim(Country)=='PHIL',\n\ttrim(Country)=='NYC',\n\ttrim(Country)=='AU',\n\tdisjoint: false) ~> ConditionalSplit1@(IND, USA, PHIL, NYC, AU, NonMatched)\nConditionalSplit1@IND sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableIndia\nConditionalSplit1@USA sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableUSA\nConditionalSplit1@PHIL sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TablePhil\nConditionalSplit1@NYC sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableNYC\nConditionalSplit1@AU sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableAU"
+		}
+	}
+}

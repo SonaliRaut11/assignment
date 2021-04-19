@@ -1,0 +1,58 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Customer_I",
+				"type": "varchar"
+			},
+			{
+				"name": "Open_Dt",
+				"type": "date"
+			},
+			{
+				"name": "Consul_Dt",
+				"type": "date"
+			},
+			{
+				"name": "VAC_ID",
+				"type": "char"
+			},
+			{
+				"name": "DR_Name",
+				"type": "char"
+			},
+			{
+				"name": "State",
+				"type": "char"
+			},
+			{
+				"name": "Country",
+				"type": "char"
+			},
+			{
+				"name": "DOB",
+				"type": "date"
+			},
+			{
+				"name": "FLAG",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vaccination_data_stg"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

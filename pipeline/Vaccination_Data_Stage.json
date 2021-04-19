@@ -1,0 +1,54 @@
+{
+	"name": "Vaccination_Data_Stage",
+	"properties": {
+		"activities": [
+			{
+				"name": "Dataflow_Main",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Dataflow_Stage",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Execute_Dimension",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_Main",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Country_Data_Dimension",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-04-17T16:07:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
