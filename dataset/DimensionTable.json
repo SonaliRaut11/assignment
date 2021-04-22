@@ -1,57 +1,25 @@
 {
-	"name": "DimensionTable",
+	"name": "StageTable",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureSqlDatabase1",
+			"referenceName": "AzureSqlDatabase2",
 			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Country": {
+				"type": "string",
+				"defaultValue": "India"
+			}
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [
-			{
-				"name": "Name",
-				"type": "varchar"
-			},
-			{
-				"name": "Customer_I",
-				"type": "varchar"
-			},
-			{
-				"name": "Open_Dt",
-				"type": "date"
-			},
-			{
-				"name": "Consul_Dt",
-				"type": "date"
-			},
-			{
-				"name": "VAC_ID",
-				"type": "char"
-			},
-			{
-				"name": "DR_Name",
-				"type": "char"
-			},
-			{
-				"name": "State",
-				"type": "char"
-			},
-			{
-				"name": "Country",
-				"type": "char"
-			},
-			{
-				"name": "DOB",
-				"type": "date"
-			},
-			{
-				"name": "FLAG",
-				"type": "char"
-			}
-		],
+		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "vaccination_data_stg"
+			"table": {
+				"value": "@concat('Table_',dataset().Country)",
+				"type": "Expression"
+			}
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
