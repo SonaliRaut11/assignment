@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DimensionTable",
+						"referenceName": "StageTable",
 						"type": "DatasetReference"
 					},
 					"name": "StageSource"
@@ -15,35 +15,35 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "StageTable",
+						"referenceName": "DimensionTable",
 						"type": "DatasetReference"
 					},
 					"name": "TableIndia"
 				},
 				{
 					"dataset": {
-						"referenceName": "StageTable",
+						"referenceName": "DimensionTable",
 						"type": "DatasetReference"
 					},
 					"name": "TableUSA"
 				},
 				{
 					"dataset": {
-						"referenceName": "StageTable",
+						"referenceName": "DimensionTable",
 						"type": "DatasetReference"
 					},
 					"name": "TablePhil"
 				},
 				{
 					"dataset": {
-						"referenceName": "StageTable",
+						"referenceName": "DimensionTable",
 						"type": "DatasetReference"
 					},
 					"name": "TableNYC"
 				},
 				{
 					"dataset": {
-						"referenceName": "StageTable",
+						"referenceName": "DimensionTable",
 						"type": "DatasetReference"
 					},
 					"name": "TableAU"

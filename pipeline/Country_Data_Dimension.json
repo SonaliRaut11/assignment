@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Dataflow_Dimension_copy1",
+				"name": "Dataflow_Dimension",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {

@@ -1,5 +1,5 @@
 {
-	"name": "DimensionTable",
+	"name": "StageTable",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase1",
