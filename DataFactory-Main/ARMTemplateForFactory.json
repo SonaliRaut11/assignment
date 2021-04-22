@@ -1,0 +1,422 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "DataFactory-Main"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
+		},
+		"AzureSqlDatabase2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase2'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Country_Data_Dimension')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Dataflow_Dimension",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow_Dimension",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"StageSource": {},
+									"TableIndia": {
+										"Country": {
+											"value": "India",
+											"type": "Expression"
+										}
+									},
+									"TableUSA": {
+										"Country": "USA"
+									},
+									"TablePhil": {
+										"Country": "Phil"
+									},
+									"TableNYC": {
+										"Country": "NYC"
+									},
+									"TableAU": {
+										"Country": "AU"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-04-17T16:07:02Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Dataflow_Dimension')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Vaccination_Data_Stage')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Dataflow_Main",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow_Stage",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SourceFile": {},
+									"StageTable": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Execute_Dimension",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Dataflow_Main",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Country_Data_Dimension",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-04-17T16:07:03Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Dataflow_Stage')]",
+				"[concat(variables('factoryId'), '/pipelines/Country_Data_Dimension')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DimensionTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase2",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Country": {
+						"type": "string",
+						"defaultValue": "India"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@concat('Table_',dataset().Country)",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Vaccination_Data.txt",
+						"folderPath": "Folder1",
+						"container": "containermain11"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StageTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Name",
+						"type": "varchar"
+					},
+					{
+						"name": "Customer_I",
+						"type": "varchar"
+					},
+					{
+						"name": "Open_Dt",
+						"type": "date"
+					},
+					{
+						"name": "Consul_Dt",
+						"type": "date"
+					},
+					{
+						"name": "VAC_ID",
+						"type": "char"
+					},
+					{
+						"name": "DR_Name",
+						"type": "char"
+					},
+					{
+						"name": "State",
+						"type": "char"
+					},
+					{
+						"name": "Country",
+						"type": "char"
+					},
+					{
+						"name": "DOB",
+						"type": "date"
+					},
+					{
+						"name": "FLAG",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "vaccination_data_stg"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase2_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataflow_Dimension')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "StageTable",
+								"type": "DatasetReference"
+							},
+							"name": "StageSource"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimensionTable",
+								"type": "DatasetReference"
+							},
+							"name": "TableIndia"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionTable",
+								"type": "DatasetReference"
+							},
+							"name": "TableUSA"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionTable",
+								"type": "DatasetReference"
+							},
+							"name": "TablePhil"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionTable",
+								"type": "DatasetReference"
+							},
+							"name": "TableNYC"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionTable",
+								"type": "DatasetReference"
+							},
+							"name": "TableAU"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DateTransform"
+						},
+						{
+							"name": "ConditionalSplit1"
+						}
+					],
+					"script": "source(output(\n\t\tName as string,\n\t\tCustomer_I as string,\n\t\tOpen_Dt as string,\n\t\tConsul_Dt as string,\n\t\tVAC_ID as string,\n\t\tDR_Name as string,\n\t\tState as string,\n\t\tCountry as string,\n\t\tDOB as string,\n\t\tFLAG as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StageSource\nStageSource derive(Open_Dt = toDate(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2),'yyyy-MM-dd'),\n\t\tConsul_Dt = toDate(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2),'yyyy-MM-dd'),\n\t\tDOB = toDate(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4),'MM-dd-yyyy')) ~> DateTransform\nDateTransform split(trim(Country)=='IND',\n\ttrim(Country)=='USA',\n\ttrim(Country)=='PHIL',\n\ttrim(Country)=='NYC',\n\ttrim(Country)=='AU',\n\tdisjoint: false) ~> ConditionalSplit1@(IND, USA, PHIL, NYC, AU, NonMatched)\nConditionalSplit1@IND sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableIndia\nConditionalSplit1@USA sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableUSA\nConditionalSplit1@PHIL sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TablePhil\nConditionalSplit1@NYC sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableNYC\nConditionalSplit1@AU sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName,\n\t\tCust_I = Customer_I,\n\t\tOpen_Dt,\n\t\tConsul_Dt,\n\t\tVAC_ID,\n\t\tDR_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFlag = FLAG\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> TableAU"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/StageTable')]",
+				"[concat(variables('factoryId'), '/datasets/DimensionTable')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataflow_Stage')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SourceFile",
+								"type": "DatasetReference"
+							},
+							"name": "SourceFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimensionTable",
+								"type": "DatasetReference"
+							},
+							"name": "StageTable"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\t{_c0} as string,\n\t\tH as string,\n\t\tCustomer_Name as string,\n\t\tCustomer_ID as string,\n\t\tOpen_Date as string,\n\t\tLast_Consulted_Date as string,\n\t\tVaccination_ID as string,\n\t\tDr_Name as string,\n\t\tState as string,\n\t\tCountry as string,\n\t\tDOB as integer,\n\t\tIs_Active as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SourceFile\nSourceFile sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tName = Customer_Name,\n\t\tCustomer_I = Customer_ID,\n\t\tOpen_Dt = Open_Date,\n\t\tConsul_Dt = Last_Consulted_Date,\n\t\tVAC_ID = Vaccination_ID,\n\t\tDR_Name = Dr_Name,\n\t\tState,\n\t\tCountry,\n\t\tDOB,\n\t\tFLAG = Is_Active\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> StageTable"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceFile')]",
+				"[concat(variables('factoryId'), '/datasets/DimensionTable')]"
+			]
+		}
+	]
+}
