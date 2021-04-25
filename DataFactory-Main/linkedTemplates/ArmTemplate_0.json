@@ -104,8 +104,11 @@
 				},
 				"parameters": {
 					"Dest_Country": {
-						"type": "string",
-						"defaultValue": "India"
+						"type": "array",
+						"defaultValue": [
+							"India",
+							"NYC"
+						]
 					}
 				},
 				"annotations": [],
@@ -114,7 +117,7 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": {
-						"value": "@concat('Table_',dataset().Dest_Country,'1')",
+						"value": "@concat('Table_',string(dataset().Dest_Country),'1')",
 						"type": "Expression"
 					}
 				}
@@ -134,8 +137,11 @@
 				},
 				"parameters": {
 					"Country": {
-						"type": "string",
-						"defaultValue": "India"
+						"type": "array",
+						"defaultValue": [
+							"India",
+							"NYC"
+						]
 					}
 				},
 				"annotations": [],
@@ -144,7 +150,7 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": {
-						"value": "@concat('Table_',dataset().Country)",
+						"value": "@concat('Table',string(dataset().Country))",
 						"type": "Expression"
 					}
 				}
@@ -361,7 +367,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "DimensionTable",
+								"referenceName": "Multiple_Dimension",
 								"type": "DatasetReference"
 							},
 							"name": "source1"
@@ -381,7 +387,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DimensionTable')]",
+				"[concat(variables('factoryId'), '/datasets/Multiple_Dimension')]",
 				"[concat(variables('factoryId'), '/datasets/Multiple_Destination')]"
 			]
 		},
