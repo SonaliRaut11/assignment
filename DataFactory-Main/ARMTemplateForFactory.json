@@ -237,11 +237,8 @@
 				},
 				"parameters": {
 					"Dest_Country": {
-						"type": "array",
-						"defaultValue": [
-							"India",
-							"NYC"
-						]
+						"type": "string",
+						"defaultValue": "India"
 					}
 				},
 				"annotations": [],
@@ -250,7 +247,7 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": {
-						"value": "@concat('Table_',string(dataset().Dest_Country),'1')",
+						"value": "@concat('Table_',dataset().Dest_Country,'1')",
 						"type": "Expression"
 					}
 				}
@@ -270,11 +267,8 @@
 				},
 				"parameters": {
 					"Country": {
-						"type": "array",
-						"defaultValue": [
-							"India",
-							"NYC"
-						]
+						"type": "string",
+						"defaultValue": "India"
 					}
 				},
 				"annotations": [],
@@ -283,7 +277,7 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": {
-						"value": "@concat('Table_',string(dataset().Country))",
+						"value": "@concat('Table_',dataset().Country)",
 						"type": "Expression"
 					}
 				}
