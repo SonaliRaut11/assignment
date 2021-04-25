@@ -20,7 +20,7 @@
 		"typeProperties": {
 			"schema": "dbo",
 			"table": {
-				"value": "@concat('Table',string(dataset().Country))",
+				"value": "@concat('Table_',string(dataset().Country))",
 				"type": "Expression"
 			}
 		}
