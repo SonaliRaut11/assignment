@@ -1,0 +1,25 @@
+{
+	"name": "Multiple_Destination",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase2",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Dest_Country": {
+				"type": "string",
+				"defaultValue": "India"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@concat('Table_',dataset().Dest_Country,'1')",
+				"type": "Expression"
+			}
+		}
+	}
+}
