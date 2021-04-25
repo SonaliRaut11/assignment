@@ -8,7 +8,10 @@
 		"parameters": {
 			"Dest_Country": {
 				"type": "array",
-				"defaultValue": "[India,NYC]"
+				"defaultValue": [
+					"India",
+					"NYC"
+				]
 			}
 		},
 		"annotations": [],
