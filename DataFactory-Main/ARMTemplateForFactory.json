@@ -166,7 +166,7 @@
 					"Country": {
 						"type": "Array",
 						"defaultValue": [
-							"India",
+							"IND",
 							"NYC",
 							"Phil",
 							"AU",
