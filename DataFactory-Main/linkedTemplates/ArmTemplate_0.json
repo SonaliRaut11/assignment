@@ -252,7 +252,7 @@
 										"source": {
 											"type": "AzureSqlSource",
 											"sqlReaderQuery": {
-												"value": "Select * from dbo.vaccination_data_stg\nwhere Country = 'item()'",
+												"value": "Select * from dbo.vaccination_data_stg\nwhere Country = '@item()'",
 												"type": "Expression"
 											},
 											"queryTimeout": "02:00:00",
@@ -283,10 +283,7 @@
 											"referenceName": "Multiple_Destination",
 											"type": "DatasetReference",
 											"parameters": {
-												"Dest_Country": {
-													"value": "@item()",
-													"type": "Expression"
-												}
+												"Dest_Country": "India"
 											}
 										}
 									]
