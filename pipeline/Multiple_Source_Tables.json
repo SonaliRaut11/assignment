@@ -30,7 +30,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "Select * from dbo.vaccination_data_stg\nwhere Country = 'item()'",
+										"value": "Select * from dbo.vaccination_data_stg\nwhere Country = '@item()'",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
