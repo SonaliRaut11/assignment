@@ -3,35 +3,87 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
-				"type": "ExecuteDataFlow",
+				"name": "For_Each_Country",
+				"type": "ForEach",
 				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "Multiple_Source_Destination",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"source1": {
-								"Country": "India"
-							}
+					"items": {
+						"value": "@variables('Country')",
+						"type": "Expression"
+					},
+					"batchCount": 1,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "Select * from dbo.vaccination_data_stg\nwhere Country = 'item()'",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "AzureSqlSink"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "StageTable",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Multiple_Destination",
+									"type": "DatasetReference",
+									"parameters": {
+										"Dest_Country": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
 						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
+					]
 				}
 			}
 		],
+		"variables": {
+			"Country": {
+				"type": "Array",
+				"defaultValue": [
+					"India",
+					"NYC",
+					"Phil",
+					"AU",
+					"USA"
+				]
+			}
+		},
 		"annotations": []
 	}
 }
