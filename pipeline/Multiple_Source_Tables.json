@@ -60,10 +60,7 @@
 									"referenceName": "Multiple_Destination",
 									"type": "DatasetReference",
 									"parameters": {
-										"Dest_Country": {
-											"value": "@item()",
-											"type": "Expression"
-										}
+										"Dest_Country": "India"
 									}
 								}
 							]
