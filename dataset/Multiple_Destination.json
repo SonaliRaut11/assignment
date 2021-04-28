@@ -8,7 +8,7 @@
 		"parameters": {
 			"Dest_Country": {
 				"type": "string",
-				"defaultValue": "India"
+				"defaultValue": "IND"
 			}
 		},
 		"annotations": [],
