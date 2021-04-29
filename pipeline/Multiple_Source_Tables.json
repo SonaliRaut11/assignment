@@ -31,7 +31,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "@concat('Select Name,Cust_I,cast(Open_Dt as date),cast(Consul_Dt as date),VAC_ID,DR_Name,State,Country,cast(DOB as date),Flag from dbo.vaccination_data_stg where trim(Country) =''',item(),'''')",
+										"value": "@concat('Select Name,Customer_I,cast(Open_Dt as date),cast(Consul_Dt as date),VAC_ID,DR_Name,State,Country,cast(DOB as date),FLAG from dbo.vaccination_data_stg where trim(Country) =''',item(),'''')",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
