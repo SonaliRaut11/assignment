@@ -104,7 +104,8 @@
 					"dataset": {
 						"referenceName": "Fetch_Col_set",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
