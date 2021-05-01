@@ -109,18 +109,6 @@
 				}
 			}
 		],
-		"variables": {
-			"Country": {
-				"type": "Array",
-				"defaultValue": [
-					"IND",
-					"NYC",
-					"Phil",
-					"AU",
-					"USA"
-				]
-			}
-		},
 		"annotations": []
 	}
 }
