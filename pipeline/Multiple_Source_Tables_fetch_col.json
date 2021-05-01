@@ -1,0 +1,125 @@
+{
+	"name": "Multiple_Source_Tables_fetch_col",
+	"properties": {
+		"activities": [
+			{
+				"name": "For_Each_Country",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('Country')",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 5,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "Select Name,\nCustomer_I as Cust_I,\ncast(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2)as date) as Open_Dt,\ncast(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2)as date) as Consul_Dt,\nVAC_ID,\nDR_Name,\nState,\nCountry,\ncast(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4)as date) as DOB,\nFLAG as Flag from dbo.vaccination_data_stg where trim(Country) = '@{item()}'",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "AzureSqlSink"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "StageTable",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Multiple_Destination",
+									"type": "DatasetReference",
+									"parameters": {
+										"Dest_Country": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "Select Country from dbo.vaccination_data_stg",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Fetch_Col_set",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Country": {
+				"type": "Array",
+				"defaultValue": [
+					"IND",
+					"NYC",
+					"Phil",
+					"AU",
+					"USA"
+				]
+			}
+		},
+		"annotations": []
+	}
+}

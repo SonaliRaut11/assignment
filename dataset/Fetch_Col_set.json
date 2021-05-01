@@ -1,0 +1,57 @@
+{
+	"name": "Fetch_Col_set",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Customer_I",
+				"type": "varchar"
+			},
+			{
+				"name": "Open_Dt",
+				"type": "varchar"
+			},
+			{
+				"name": "Consul_Dt",
+				"type": "varchar"
+			},
+			{
+				"name": "VAC_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "DR_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "State",
+				"type": "varchar"
+			},
+			{
+				"name": "Country",
+				"type": "varchar"
+			},
+			{
+				"name": "DOB",
+				"type": "varchar"
+			},
+			{
+				"name": "FLAG",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "vaccination_data_stg"
+		}
+	}
+}
