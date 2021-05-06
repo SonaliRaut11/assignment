@@ -7,7 +7,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Set variable1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output",
+						"value": "@variables('Country_Name')",
 						"type": "Expression"
 					},
 					"isSequential": false,
@@ -38,7 +38,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "Select Name,\nCustomer_I as Cust_I,\ncast(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2)as date) as Open_Dt,\ncast(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2)as date) as Consul_Dt,\nVAC_ID,\nDR_Name,\nState,\nCountry,\ncast(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4)as date) as DOB,\nFLAG as Flag from dbo.vaccination_data_stg where trim(Country) = '@{activity('Lookup1').output}'",
+										"value": "Select Name,\nCustomer_I as Cust_I,\ncast(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2)as date) as Open_Dt,\ncast(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2)as date) as Consul_Dt,\nVAC_ID,\nDR_Name,\nState,\nCountry,\ncast(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4)as date) as DOB,\nFLAG as Flag from dbo.vaccination_data_stg where trim(Country) = '@{item()}'",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -69,7 +69,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"Dest_Country": {
-											"value": "@activity('Lookup1').output",
+											"value": "@item()",
 											"type": "Expression"
 										}
 									}
@@ -107,8 +107,33 @@
 					},
 					"firstRowOnly": false
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Country_Name",
+					"value": {
+						"value": "@activity('Lookup1').output",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"Country_Name": {
+				"type": "Array"
+			}
+		},
 		"annotations": []
 	}
 }
