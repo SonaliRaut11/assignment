@@ -69,7 +69,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"Dest_Country": {
-											"value": "@item()",
+											"value": "@activity('Lookup1').output",
 											"type": "Expression"
 										}
 									}
