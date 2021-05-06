@@ -121,7 +121,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "Country_Name",
+					"variableName": "Country",
 					"value": {
 						"value": "@activity('Lookup1').output.value",
 						"type": "Expression"
@@ -130,7 +130,7 @@
 			}
 		],
 		"variables": {
-			"Country_Name": {
+			"Country": {
 				"type": "Array"
 			}
 		},
