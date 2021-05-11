@@ -38,7 +38,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "if('@{item().Country}' = 'IND')\nSelect Name,\nCustomer_I as Cust_I,\ncast(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2)as date) as Open_Dt,\ncast(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2)as date) as Consul_Dt,\nVAC_ID,\nDR_Name,\nState,\nCountry,\ncast(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4)as date) as DOB,\nFLAG as Flag from dbo.vaccination_data_stg where trim(Country) = 'IND'\nelse\nSelect Name,\nCustomer_I as Cust_I,\ncast(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2)as date) as Open_Dt,\ncast(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2)as date) as Consul_Dt,\nVAC_ID,\nDR_Name,\nState,\nCountry,\ncast(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4)as date) as DOB,\nFLAG as Flag from dbo.vaccination_data_stg where trim(Country) = '@{item().Country}'",
+										"value": "if(pipeline().parameters.blank='' )\nSelect Name,\nCustomer_I as Cust_I,\ncast(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2)as date) as Open_Dt,\ncast(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2)as date) as Consul_Dt,\nVAC_ID,\nDR_Name,\nState,\nCountry,\ncast(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4)as date) as DOB,\nFLAG as Flag from dbo.vaccination_data_stg where trim(Country) = 'IND'\nelse\nSelect Name,\nCustomer_I as Cust_I,\ncast(substring(Open_Dt,1,4)+'-'+substring(Open_Dt,5,2)+'-'+substring(Open_Dt,7,2)as date) as Open_Dt,\ncast(substring(Consul_Dt,1,4)+'-'+substring(Consul_Dt,5,2)+'-'+substring(Consul_Dt,7,2)as date) as Consul_Dt,\nVAC_ID,\nDR_Name,\nState,\nCountry,\ncast(substring(DOB,1,1)+'-'+substring(DOB,2,2)+'-'+substring(DOB,4,4)as date) as DOB,\nFLAG as Flag from dbo.vaccination_data_stg where trim(Country) = '@{item().Country}'",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -109,6 +109,11 @@
 				}
 			}
 		],
+		"parameters": {
+			"blank": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
